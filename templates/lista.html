@@ -1,0 +1,42 @@
+{% extends "template.html" %}
+{% block conteudo %}
+
+        <a class="btn btn-primary" href="{{url_for('novo')}}">Novo Boleto</a>
+
+        <table class="table table-striped table-responsive table-bordered">
+            <thead class="thead-default">
+                <tr>
+                    <th>Descrição</th>
+                    <th>Categoria</th>
+                    <th>Valor</th>
+                    <th>Data de Vencimento</th>
+                    <th>Data de Pagamento</th>
+                    <th>Situação</th>
+                    <th>Código</th>
+
+                    <th>Ações</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for boleto in boletos %}
+                <tr>
+                    <td>{{ boleto.descricao }}</td>
+                    <td>{{ boleto.categoria }}</td>
+                    <td>{{ boleto.valor }}</td>
+                    <td>{{ boleto.data_vencimento}}</td>
+                    <td>{{ boleto.data_pagamento }}</td>
+                    <td>{{ boleto.situacao }}</td>
+                    <td>{{ boleto.codigo_boleto }}</td>
+
+                     <td>
+                         <a href="{{ url_for('editar', id=boleto.id) }}">Editar</a>
+                         <a href="{{ url_for('deletar', id=boleto.id) }}">Deletar</a>
+                     </td>
+
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+{% endblock %}
