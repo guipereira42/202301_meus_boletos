@@ -1,7 +1,30 @@
 {% extends "template.html" %}
 {% block conteudo %}
 
+        <a class="btn btn-primary" href="{{url_for('index')}}">Início</a>
         <a class="btn btn-primary" href="{{url_for('novo')}}">Novo Boleto</a>
+        </br>
+
+         <form class="formularioBoleto" action="{{ url_for('busca', proxima=proxima) }}" method="post" enctype="multipart/form-data">
+
+        <fieldset>
+          {{ form.csrf_token() }}
+          <div class="form-group inputBox">
+            {{form.data_vencimento_inicio.label(class="form-label")}}
+            {{form.data_vencimento_inicio(class="form-control")}}
+          </div>
+          <div class="form-group inputBox">
+            {{form.data_vencimento_final.label(class="form-label")}}
+            {{form.data_vencimento_final(class="form-control")}}
+          </div>
+          <div class="form-group buttons">
+            {{form.buscar(class="btn-primary")}}
+          </div>
+
+        </fieldset>
+      </form>
+
+        </br>
 
         <table class="table table-striped table-responsive table-bordered">
             <thead class="thead-default">
@@ -30,8 +53,8 @@
                     <td>{{ boleto.codigo_boleto }}</td>
 
                      <td>
-                         <a href="{{ url_for('editar', id=boleto.id) }}">Editar</a>
-                         <a href="{{ url_for('deletar', id=boleto.id) }}">Deletar</a>
+                         <a href="{{ url_for('editar', id=boleto.id, proxima=proxima,data_vencimento_inicio=data_vencimento_inicio, data_vencimento_final=data_vencimento_final) }}">Editar</a>
+                         <a href="{{ url_for('deletar', id=boleto.id, proxima=proxima,data_vencimento_inicio=data_vencimento_inicio, data_vencimento_final=data_vencimento_final) }}">Deletar</a>
                      </td>
 
                 </tr>

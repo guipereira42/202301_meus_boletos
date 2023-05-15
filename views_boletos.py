@@ -1,14 +1,21 @@
 from flask import render_template, request, redirect, session, flash, url_for, send_from_directory
+from sqlalchemy import func
+
 from meusboletos import app, db
 from models import Boletos
-from helpers import FormularioBoleto
+from helpers import FormularioBoleto, BuscaBoleto
 import time
 
 
 @app.route('/')
 def index():
+
+    form = BuscaBoleto(request.form)
+    if form is None:
+        form = BuscaBoleto()
+
     lista = Boletos.query.order_by(Boletos.id)
-    return render_template('lista.html', titulo='Boletos', boletos=lista)
+    return render_template('lista.html', titulo='Meus Boletos', boletos=lista, proxima='index', form=form)
 
 
 @app.route('/novo')
@@ -50,6 +57,9 @@ def criar():
 @app.route('/editar/<int:id>')
 def editar(id):
 
+    proxima = request.args.get('proxima')
+    data_vencimento_inicio = request.args.get('data_vencimento_inicio')
+    data_vencimento_final = request.args.get('data_vencimento_final')
     boleto = Boletos.query.filter_by(id=id).first()
 
     form = FormularioBoleto()
@@ -62,10 +72,16 @@ def editar(id):
     form.situacao.data = boleto.situacao
     form.codigo_boleto.data = boleto.codigo_boleto
 
-    return render_template('editar.html', titulo='Editando Boleto', id=id, form=form)
+    return render_template('editar.html', titulo='Editando Boleto', id=id, form=form, proxima=proxima,
+                           data_vencimento_inicio=data_vencimento_inicio, data_vencimento_final=data_vencimento_final)
+
 
 @app.route('/atualizar', methods=['POST',])
 def atualizar():
+
+    proxima = request.args.get('proxima')
+    data_vencimento_inicio = request.args.get('data_vencimento_inicio')
+    data_vencimento_final = request.args.get('data_vencimento_final')
     form = FormularioBoleto(request.form)
 
     if form.validate_on_submit():
@@ -81,11 +97,34 @@ def atualizar():
         db.session.add(boleto)
         db.session.commit()
 
-    return redirect(url_for('index'))
+    return redirect(url_for(proxima, data_vencimento_inicio=data_vencimento_inicio, data_vencimento_final=data_vencimento_final))
+
 
 @app.route('/deletar/<int:id>')
 def deletar(id):
+    data_vencimento_inicio = request.args.get('data_vencimento_inicio')
+    data_vencimento_final = request.args.get('data_vencimento_final')
+    proxima = request.args.get('proxima')
     Boletos.query.filter_by(id=id).delete()
     db.session.commit()
     flash('Boleto deletado com sucesso.')
-    return redirect(url_for('index'))
+    return redirect(url_for(proxima, data_vencimento_inicio=data_vencimento_inicio, data_vencimento_final=data_vencimento_final))
+
+
+@app.route('/busca', methods=['GET', 'POST'])
+def busca():
+
+    form = BuscaBoleto()
+    data_vencimento_inicio = next(data for data in [form.data_vencimento_inicio.data,
+                                                    request.args.get('data_vencimento_inicio'),
+                                                    db.session.query(func.min(Boletos.data_vencimento)).scalar()] if data is not None)
+    data_vencimento_final = next(data for data in [form.data_vencimento_final.data,
+                                                   request.args.get('data_vencimento_final'),
+                                                   db.session.query(func.max(Boletos.data_vencimento)).scalar()] if data is not None)
+
+    lista = Boletos.query.filter(Boletos.data_vencimento.between(data_vencimento_inicio, data_vencimento_final)) \
+        .order_by(Boletos.data_vencimento).all()
+
+    return render_template('lista.html', titulo='Busca de Boletos', boletos=lista, proxima='busca', form=form,
+                           data_vencimento_inicio=data_vencimento_inicio, data_vencimento_final=data_vencimento_final)
+

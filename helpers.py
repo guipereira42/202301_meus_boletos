@@ -1,6 +1,12 @@
 from meusboletos import app
 from flask_wtf import FlaskForm
-from wtforms import StringField, validators, SubmitField, DateField, DecimalField
+from wtforms import StringField, validators, SubmitField, DateField, DecimalField, SelectField
+
+
+class BuscaBoleto(FlaskForm):
+    data_vencimento_inicio = DateField('Data Início de Vencimento', [validators.Optional()])
+    data_vencimento_final = DateField('Data Final de Vencimento', [validators.Optional()])
+    buscar = SubmitField('Buscar')
 
 
 class FormularioBoleto(FlaskForm):
@@ -9,7 +15,7 @@ class FormularioBoleto(FlaskForm):
     valor = DecimalField('Valor', [validators.data_required()])
     data_vencimento = DateField('Data de Vencimento', [validators.data_required()])
     data_pagamento = DateField('Data de Pagamento', [validators.Optional()])
-    situacao = StringField('Situação', [validators.data_required(), validators.Length(min=1, max=20)])
+    situacao = SelectField('Situação', choices=['Pendente', 'Pago'])
     codigo_boleto = StringField('Código', [validators.data_required(), validators.Length(min=0, max=48)])
     salvar = SubmitField('Salvar')
 
