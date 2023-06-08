@@ -1,6 +1,6 @@
 {% extends "template.html" %}
 {% block conteudo %}
-      <form class="formularioBoleto" action="{{ url_for('atualizar', proxima=proxima, data_vencimento_inicio=data_vencimento_inicio, data_vencimento_final=data_vencimento_final) }}" method="post" enctype="multipart/form-data">
+      <form class="formularioBoleto" action="{{ url_for('atualizar', proxima=proxima, data_vencimento_inicio=data_vencimento_inicio, data_vencimento_final=data_vencimento_final, situacao=situacao) }}" method="post" enctype="multipart/form-data">
 
         <fieldset>
           <input type="hidden" name="id" value="{{ id }}">
@@ -35,7 +35,7 @@
           </div>
           <div class="form-group buttons">
             {{form.salvar(class="btn-primary")}}
-            <a class="btn btn-danger" href="{{url_for(proxima, data_vencimento_inicio=data_vencimento_inicio, data_vencimento_final=data_vencimento_final)}}">Voltar</a>
+            <a class="btn btn-danger" href="{{url_for(proxima, data_vencimento_inicio=data_vencimento_inicio, data_vencimento_final=data_vencimento_final, situacao=situacao)}}">Voltar</a>
           </div>
 
 

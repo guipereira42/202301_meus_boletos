@@ -6,6 +6,7 @@ from wtforms import StringField, validators, SubmitField, DateField, DecimalFiel
 class BuscaBoleto(FlaskForm):
     data_vencimento_inicio = DateField('Data Início de Vencimento', [validators.Optional()])
     data_vencimento_final = DateField('Data Final de Vencimento', [validators.Optional()])
+    situacao = SelectField('Situação', [validators.Optional()], choices=['Todas', 'Pendente', 'Pago'],)
     buscar = SubmitField('Buscar')
 
 
